@@ -23,6 +23,8 @@
         <maven.plugin.jacoco.version>0.8.12</maven.plugin.jacoco.version>
         <maven.plugin.dockerfile.version>1.4.10</maven.plugin.dockerfile.version>
         <maven.plugin.codehaus.exec.version>3.4.1</maven.plugin.codehaus.exec.version>
+        <maven.plugin.apache.deploy.version>3.1.3</maven.plugin.apache.deploy.version>
+        <maven.plugin.apache.resources.version>3.2.0</maven.plugin.apache.resources.version>
 
         <!-- commons-io -->
         <commons-io.version>2.16.1</commons-io.version>
@@ -58,6 +60,7 @@
 
         <!-- Prometheus -->
         <prometheus-metrics-simpleclient-bridge.version>1.0.0</prometheus-metrics-simpleclient-bridge.version>
+
         <!-- Apache -->
         <apache.httpcomponents>4.5.14</apache.httpcomponents>
         <apache.httpcomponents.core5.version>5.3.1</apache.httpcomponents.core5.version>
@@ -169,7 +172,109 @@
     </profiles>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>truststore/*</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources/truststore</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+
+        <pluginManagement>
+
+            <plugins>
+                <!-- Testing !-->
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${maven.plugin.jacoco.version}</version>
+                </plugin>
+
+                <!-- Spring Boot !-->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${maven.plugin.spring.boot.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>repackage</goal>
+                                <goal>build-info</goal>
+                            </goals>
+                            <configuration>
+                                <classifier>exec</classifier>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- Docker Image !-->
+                <plugin>
+                    <groupId>com.spotify</groupId>
+                    <artifactId>dockerfile-maven-plugin</artifactId>
+                    <version>${maven.plugin.dockerfile.version}</version>
+                    <executions>
+                        <execution>
+                            <id>build-image</id>
+                            <goals>
+                                <goal>build</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>push-image</id>
+                            <phase>deploy</phase>
+                            <goals>
+                                <goal>push</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+                        <repository>${docker.image.registry}/${docker.image.name}</repository>
+                        <tag>${project.version}</tag>
+                        <dockerfile>Dockerfile</dockerfile>
+                        <contextDirectory>.</contextDirectory>
+                        <skipDockerInfo>true</skipDockerInfo>
+                        <skip>${docker.image.skip}</skip>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>javax.activation</groupId>
+                            <artifactId>javax.activation-api</artifactId>
+                            <version>1.2.0</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
         <plugins>
+            <!-- Resources !-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven.plugin.apache.resources.version}</version>
+                <configuration>
+                    <delimiters>
+                        <delimiter>${resource.delimiter}</delimiter>
+                    </delimiters>
+                    <useDefaultDelimiters>false</useDefaultDelimiters>
+                </configuration>
+            </plugin>
+            <!-- Deployment !-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven.plugin.apache.deploy.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
             <!-- Testing !-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -353,72 +458,6 @@
                 </executions>
             </plugin>
         </plugins>
-
-        <pluginManagement>
-            <plugins>
-                <!-- Testing !-->
-                <plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>${maven.plugin.jacoco.version}</version>
-                </plugin>
-
-                <!-- Spring Boot !-->
-                <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>${maven.plugin.spring.boot.version}</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>repackage</goal>
-                                <goal>build-info</goal>
-                            </goals>
-                            <configuration>
-                                <classifier>exec</classifier>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <!-- Docker Image !-->
-                <plugin>
-                    <groupId>com.spotify</groupId>
-                    <artifactId>dockerfile-maven-plugin</artifactId>
-                    <version>${maven.plugin.dockerfile.version}</version>
-                    <executions>
-                        <execution>
-                            <id>build-image</id>
-                            <goals>
-                                <goal>build</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>push-image</id>
-                            <phase>deploy</phase>
-                            <goals>
-                                <goal>push</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
-                        <repository>${docker.image.registry}/${docker.image.name}</repository>
-                        <tag>${project.version}</tag>
-                        <dockerfile>Dockerfile</dockerfile>
-                        <contextDirectory>.</contextDirectory>
-                        <skipDockerInfo>true</skipDockerInfo>
-                        <skip>${docker.image.skip}</skip>
-                    </configuration>
-                    <dependencies>
-                        <dependency>
-                            <groupId>javax.activation</groupId>
-                            <artifactId>javax.activation-api</artifactId>
-                            <version>1.2.0</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-            </plugins>
-        </pluginManagement>
 
 
     </build>
@@ -612,6 +651,15 @@
         </dependency>
 
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+        </repository>
+    </repositories>
+
 
     <distributionManagement>
         <site>
