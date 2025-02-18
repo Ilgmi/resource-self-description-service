@@ -24,6 +24,8 @@ jobs:
       MAVEN_PROFILES: ""
       COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
       DOCKER_HOST: "unix:///var/run/docker.sock"
+      REPOSITORY: "ghcr.io/${{github.actor}}"
+
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 19
@@ -45,7 +47,7 @@ jobs:
           ]'
       - name: Build with Maven and push Docker Images
         if: github.ref_name == 'feature/github-workflow' || (github.event_name != 'pull_request' && (github.ref_name == 'develop' || github.ref_name == 'main' || startsWith(github.ref_name, 'release/')))
-        run: mvn $MAVEN_PROFILES $MAVEN_CLI_OPTS -e -X deploy
+        run: mvn $MAVEN_PROFILES $MAVEN_CLI_OPTS -e -X -Ddocker.image.registry=$REPOSITORY deploy
       - name: Build with Maven
         if: github.event_name == 'pull_request' || startsWith(github.ref_name, 'feature/') || startsWith(github.ref_name, 'fix/')
         run: mvn $MAVEN_PROFILES $MAVEN_CLI_OPTS clean org.jacoco:jacoco-maven-plugin:prepare-agent install -q org.jacoco:jacoco-maven-plugin:report -Pcoverage verify
