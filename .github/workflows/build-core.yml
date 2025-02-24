@@ -23,8 +23,6 @@ jobs:
       MAVEN_CLI_OPTS: "-T 8 -s ci/ci_maven_settings.xml --batch-mode --errors --fail-at-end --show-version --no-transfer-progress -DinstallAtEnd=true -DdeployAtEnd=true"
       MAVEN_PROFILES: ""
       COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-      REGISTRY_USERNAME: ${{github.actor}}
-      REGISTRY_PASSWORD: ${{secrets.GITHUB_TOKEN}}
 
     steps:
       - uses: actions/checkout@v3
@@ -47,7 +45,7 @@ jobs:
           ]'
       - name: Build with Maven and push Docker Images
         if: github.event_name != 'pull_request' && (github.ref_name == 'develop' || github.ref_name == 'main' || startsWith(github.ref_name, 'release/'))
-        run: mvn $MAVEN_PROFILES $MAVEN_CLI_OPTS deploy
+        run: mvn $MAVEN_PROFILES $MAVEN_CLI_OPTS -Ddocker.image.registry="ghcr.io/${{github.actor}}" deploy
       - name: Build with Maven
         if: github.event_name == 'pull_request' || startsWith(github.ref_name, 'feature/') || startsWith(github.ref_name, 'fix/')
         run: mvn $MAVEN_PROFILES $MAVEN_CLI_OPTS clean org.jacoco:jacoco-maven-plugin:prepare-agent install -q org.jacoco:jacoco-maven-plugin:report -Pcoverage verify
