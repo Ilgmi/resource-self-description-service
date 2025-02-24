@@ -422,7 +422,8 @@
                     <version>${jib-maven-plugin.version}</version>
                     <configuration>
                         <to>
-                            <image>${docker.image.registry}/${docker.image.name}</image>
+                            <image>${docker.image.registry}/${docker.image.name}:${project.version}</image>
+
                             <tags>
                                 <tag>${project.version}</tag>
                             </tags>
