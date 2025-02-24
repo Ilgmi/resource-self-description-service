@@ -426,24 +426,20 @@
                             <tags>
                                 <tag>${project.version}</tag>
                             </tags>
-                            <auth>
-                                <username>${env.REGISTRY_USERNAME}</username>
-                                <password>${env.REGISTRY_PASSWORD}</password>
-                            </auth>
                         </to>
                     </configuration>
                     <executions>
                         <execution>
                             <id>build-image</id>
                             <goals>
-                                <goal>build</goal>
+                                <goal>dockerBuild</goal>
                             </goals>
                         </execution>
                         <execution>
                             <id>push-image</id>
                             <phase>deploy</phase>
                             <goals>
-                                <goal>push</goal>
+                                <goal>build</goal>
                             </goals>
                         </execution>
                     </executions>
