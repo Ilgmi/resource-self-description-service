@@ -27,7 +27,7 @@
         <maven.plugin.apache.resources.version>3.2.0</maven.plugin.apache.resources.version>
 
         <!-- Docker Image and Registry -->
-        <jib-maven-plugin.version>3.4.3</jib-maven-plugin.version>
+        <jib-maven-plugin.version>3.4.2</jib-maven-plugin.version>
 
         <!-- commons-io -->
         <commons-io.version>2.16.1</commons-io.version>
@@ -108,7 +108,7 @@
         <spring-boot-docker-compose.version>3.3.3</spring-boot-docker-compose.version>
 
         <!-- Docker Image -->
-        <docker.image.registry>ghcr.io/ilgmi</docker.image.registry>
+        <docker.image.registry>ghcr.io/eclipse-slm</docker.image.registry>
         <docker.image.skip>false</docker.image.skip>
 
         <docker-java.version>3.2.13</docker-java.version>
@@ -428,10 +428,12 @@
                                 <tag>${project.version}</tag>
                             </tags>
                         </to>
+                        <skip>${docker.image.skip}</skip>
                     </configuration>
                     <executions>
                         <execution>
                             <id>build-image</id>
+                            <phase>package</phase>
                             <goals>
                                 <goal>dockerBuild</goal>
                             </goals>
