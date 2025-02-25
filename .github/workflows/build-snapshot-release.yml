@@ -39,7 +39,7 @@ jobs:
         run: echo "VERSION=$(echo $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout))" >> $GITHUB_ENV
 
       - name: Set Name
-        run: echo "NAME=$(echo resource-self-description-service-${{env.VERSION}}" >> $GITHUB_ENV
+        run: echo "NAME=$(echo resource-self-description-service-${{env.VERSION}})" >> $GITHUB_ENV
 
       - name: Copy Jar exec
         run: cp service/service.rest/target/*-exec.jar ${{env.NAME}}.jar
