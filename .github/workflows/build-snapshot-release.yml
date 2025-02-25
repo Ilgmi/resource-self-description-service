@@ -35,7 +35,7 @@ jobs:
         run: mvn help:evaluate -Dexpression=project.version -q -DforceStdout
 
       - name: Get Version
-        run: export VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+        run: VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
 
       - name: Version
         run: echo Version "$VERSION"
