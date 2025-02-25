@@ -35,19 +35,22 @@ jobs:
         if: failure() || cancelled()
         run: find . -type f -path "*test-reports/*-output.txt" -exec tail -n +1 {} +
 
-      - name: TEST
-        run: echo $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+      - name: Get Version
+        run: echo $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout) >> $VERSION
+
+      - name: Set Name
+        run: echo resource-self-description-service-${{env.VERSION}}.jar >> $NAME
 
       - name: Copy Jar exec
-        run: cp service/service.rest/target/*-exec.jar resource-self-description-service-$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout).jar
+        run: cp service/service.rest/target/*-exec.jar ${{env.NAME}}.jar
 
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           draft: true
           prerelease: true
-          name: resource-self-description-service-$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          tag_name: $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          files: resource-self-description-service-$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout).jar
+          name: ${{env.NAME}}
+          tag_name: ${{env.NAME}}
+          files: ${{env.NAME}}.jar
 
 
