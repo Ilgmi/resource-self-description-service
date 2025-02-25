@@ -36,7 +36,7 @@ jobs:
         run: find . -type f -path "*test-reports/*-output.txt" -exec tail -n +1 {} +
 
       - name: Get Version
-        run: echo $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout) >> $VERSION
+        run: echo "VERSION=$(echo $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout))" >> $GITHUB_ENV
 
       - name: Set Name
         run: echo resource-self-description-service-${{env.VERSION}}.jar >> $NAME
