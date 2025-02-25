@@ -31,16 +31,23 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Test
-        run: mvn help:evaluate -Dexpression=project.version -q -DforceStdout
-
-      - name: Get Version
-        run: VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
-
-      - name: Version
-        run: echo Version "$VERSION"
-
-
       - name: Log test output on failure
         if: failure() || cancelled()
         run: find . -type f -path "*test-reports/*-output.txt" -exec tail -n +1 {} +
+
+      - name: TEST
+        run: echo $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+
+      - name: Copy Jar exec
+        run: cp service/service.rest/target/*-exec.jar resource-self-description-service-$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout).jar
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          prerelease: true
+          name: resource-self-description-service-$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          tag_name: $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          files: resource-self-description-service-$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout).jar
+
+
