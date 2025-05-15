@@ -14,17 +14,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-
-
-interface GetResult{
+interface GetResult {
     String getExpectedResult();
 }
 
-class TemplateTest{
+class TemplateTest {
     public HashMap<String, Object> data;
     public String testTemplate;
 
@@ -69,7 +66,7 @@ public class TemplateRendererTests {
                         }
                 ),
                 new TemplateTest(
-                        "<#assign x = \"something\">${x?indexOf(\"met\")}" ,
+                        "<#assign x = \"something\">${x?indexOf(\"met\")}",
                         () -> {
                             return "2";
                         }
@@ -92,6 +89,24 @@ public class TemplateRendererTests {
                                 PathHelper.getPathForFile(this, "yaml/simple_file.yaml", osIsWindows)),
                         () -> {
                             return "10.1";
+                        }
+                ),
+                new TemplateTest(
+                        String.format("${CV(\"%s\", \"%s\", \"%s\")?string[\"0.0\"]}", "echo {'price range':{'cheap':10}}", "j", "$.['price range'].cheap"),
+                        () -> {
+                            return "10.0";
+                        }
+                ),
+                new TemplateTest(
+                        String.format("${CV('%s', \"%s\", \"%s\")}", "echo \"<root><element>Some data</element></root>\"", "x", "/root/element"),
+                        () -> {
+                            return "Some data";
+                        }
+                ),
+                new TemplateTest(
+                        String.format("${CV(\"%s\", \"%s\", \"%s\")}", "echo some element", "r", "element"),
+                        () -> {
+                            return "element";
                         }
                 )
         );
