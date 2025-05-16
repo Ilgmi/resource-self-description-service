@@ -4,6 +4,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
+import org.eclipse.slm.self_description_service.templating.method.CommandValueMethod;
 import org.eclipse.slm.self_description_service.templating.method.JsonFileValueMethod;
 import org.eclipse.slm.self_description_service.templating.method.YamlFileValueMethod;
 import org.springframework.stereotype.Component;
@@ -52,6 +53,7 @@ public class TemplateRenderer {
 
             combinedRenderContext.put("JsonFileValue", new JsonFileValueMethod());
             combinedRenderContext.put("YamlFileValue", new YamlFileValueMethod());
+            combinedRenderContext.put("CV", new CommandValueMethod());
 
             var template = new Template("", new StringReader(templateContent), cfg);
 

@@ -3,6 +3,7 @@ package org.eclipse.slm.self_description_service.templating.method;
 import com.jayway.jsonpath.JsonPath;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
+import org.eclipse.slm.self_description_service.templating.utils.JsonPathReader;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,7 +29,8 @@ public class JsonFileValueMethod implements TemplateMethodModelEx {
             var jsonFile = JsonPath.parse(targetFile);
             var valuePath = list.get(0).toString();
 
-            return jsonFile.read(valuePath);
+            return JsonPathReader.readSingleValueFromPath(jsonFile, valuePath);
+
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);

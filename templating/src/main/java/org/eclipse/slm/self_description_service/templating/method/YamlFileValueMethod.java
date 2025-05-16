@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.jayway.jsonpath.JsonPath;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
+import org.eclipse.slm.self_description_service.templating.utils.JsonPathReader;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,7 +33,8 @@ public class YamlFileValueMethod implements TemplateMethodModelEx {
             var json = JsonPath.parse(jsonString);
 
             var valuePath = list.get(0).toString();
-            return json.read(valuePath);
+
+            return JsonPathReader.readSingleValueFromPath(json, valuePath);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
