@@ -18,7 +18,7 @@
 
         <!-- Deployment -->
         <docker.image.skip>false</docker.image.skip>
-        <docker.image.registry>ghcr.io/eclipse-slm</docker.image.registry>
+        <docker.image.registry>ghcr.io/ilgmi</docker.image.registry>
         <artifact.deployment.skip>true</artifact.deployment.skip>
 
 
