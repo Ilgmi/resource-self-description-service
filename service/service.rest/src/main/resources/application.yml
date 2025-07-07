@@ -17,11 +17,6 @@ server:
   port: 8081
   error:
     include-message: always
-  ssl:
-    enabled: true
-    key-store-type: PEM
-    certificate: file:./certs/${resource.id}.crt
-    certificate-private-key: file:./certs/${resource.id}.key
 
 open-api:
   title: Self Description Service
@@ -43,6 +38,15 @@ springdoc:
 
 ### Spring
 spring:
+  ssl:
+    bundle:
+      pem:
+        resource:
+          keystore:
+            certificate: file:./certs/${resource.id}.crt
+            private-key: file:./certs/${resource.id}.key
+
+
   application:
     name: self_description_service
   main:
