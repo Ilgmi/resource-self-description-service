@@ -91,6 +91,7 @@ public class AasRegistryClient {
             var convertedAasDescriptor = AasRegistryClient.convertAasDescriptor(result.getData());
             return Optional.of(convertedAasDescriptor);
         } catch (ApiException e) {
+            LOG.error("Request ShellDescriptor by ID with URL '"+this.aasRegistryUrl+"':  "+e.getMessage());
             if (e.getCode() == 404) {
                 return Optional.empty();
             } else {
